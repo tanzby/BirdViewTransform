@@ -1,0 +1,4 @@
+0.png:  left
+1.png:  forward
+2.png:  right
+3.png:  backward
