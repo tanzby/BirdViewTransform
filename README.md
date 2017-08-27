@@ -9,7 +9,7 @@ I have four imgs, such as(from up to down: **left**, **forward**, **right**, **b
 
 ![Forward](img/1.png)
 
-![Right][img/2.png)
+![Right](img/2.png)
 
 ![Backward](img/3.png)
 
