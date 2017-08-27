@@ -3,7 +3,7 @@ Put FOUR image(or video stream) from 4 different directions together, and form t
 
 ## About
 
-I have four imgs, such as(from up to down: left, forward, right, backward)
+I have four imgs, such as(from up to down: **left**, **forward**, **right**, **backward**)
 
 ![Left](img/0.png)
 
