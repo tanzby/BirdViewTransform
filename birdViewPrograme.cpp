@@ -77,9 +77,11 @@ bool read()
 
 int main()
 {
+	/**************************  setting parameters *************************/
 	Mat v[4];
-	double W = 110 * 2, H = 190 * 2;
-	Size chessBordWidth(30 * 2, 30 * 2), Shift(300, 300);
+	int maskHeigth = 200;
+	double W = 220, H = 380;
+	Size chessBordWidth(60, 60), Shift(300, 300);
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -88,7 +90,8 @@ int main()
 		v[i] = imread(buf);
 	}
 
-	//calculate sizes for every things
+	/*********************  calculate sizes for everything *******************/
+	//
 	Size   mSize(Shift.width * 2 + W + chessBordWidth.width * 2,
 		Shift.height * 2 + H + chessBordWidth.height * 2);
 	Mat m = Mat(mSize, v[0].type());
@@ -114,7 +117,8 @@ int main()
 	targetPoint[2][2] = Point2f(mSize.width - Shift.width, mSize.height - Shift.height);
 	targetPoint[2][1] = Point2f(Shift.width + chessBordWidth.width + W, mSize.height - Shift.height);
 
-	/*decide whether to collect new Source's point*/
+	/************  decide whether to collect new Source's point **************/
+
 	printf("new Click??  [y/n]\n");
 	char enter;
 	enter = getchar();
@@ -136,7 +140,8 @@ int main()
 		save();/*save source's points*/
 	}
 
-	// combine
+	/**************************  combine four image  *************************/
+	
 	Mat b[4];
 	int seq[4] = { 0,2,1,3 };
 	int ShiftAdjust = 30;
@@ -148,7 +153,6 @@ int main()
 		Rect(0,mSize.height - Shift.width - chessBordWidth.width - ShiftAdjust,mSize.width,Shift.height + chessBordWidth.height + ShiftAdjust)
 	};
 
-	int maskHeigth = 200;
 	Mat maskF = Mat(r[1].size(), CV_8UC1, Scalar(1));
 	Mat maskS = Mat(r[1].size(), CV_8UC1, Scalar(1));
 	vector<vector<Point>> maskVec;
@@ -170,7 +174,8 @@ int main()
 	maskVec[3].push_back(Point(mSize.width, 0));
 	maskVec[3].push_back(Point(mSize.width, maskHeigth));
 	maskVec[3].push_back(Point(mSize.width - r[2].width, 0));
-	/*draw  mask*/
+	
+	/*form  mask*/
 	drawContours(maskF, maskVec, 0, Scalar(0), CV_FILLED);
 	drawContours(maskF, maskVec, 1, Scalar(0), CV_FILLED);
 	drawContours(maskS, maskVec, 2, Scalar(0), CV_FILLED);
@@ -193,12 +198,12 @@ int main()
 		}
 	}
 
-	//drawing target points
+	//drawing target points in final image
 	Scalar color[4] = { Scalar(255,0,0),Scalar(0,255,0), Scalar(255,255,0), Scalar(0,255,255) };
 	for (int i = 0; i < 16; i++)
 		circle(m, targetPoint[i / 4][i % 4], 5, color[i / 4], 5);
 
-	// output
+	/**************************  output birdeye  view  *************************/
 	while (1)
 	{
 		imshow("b", m);
