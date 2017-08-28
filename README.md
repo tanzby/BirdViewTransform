@@ -1,5 +1,5 @@
 # BirdViewTransform
-Put FOUR image(or video stream) from 4 different directions together, and form them into a bird view. 
+Put FOUR image (or video stream )from 4 different directions together, and form them into a bird view. 
 
 ## About
 
@@ -18,9 +18,11 @@ using this programe, we can get
 ![after transform](img/ok.png)
 
 ## parameters setting
-Many API function has been declared in *Class BirhView*, and meanings of them are follow:
+Meanings of functions from this *Class BirhView* are shown as figure follow:
 
 ![param setting](img/ParamSetting.png)
+
+Before using this API Class, be awared you have had known that accurated measure is need for better visual effect and making image be exact
 
 ## other
 
