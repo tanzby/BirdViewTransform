@@ -17,6 +17,11 @@ using this programe, we can get
 
 ![after transform](img/ok.png)
 
+## parameters setting
+Many API function has been declared in *Class BirhView*, and meanings of them are follow:
+
+![param setting](img/ParamSetting.png)
+
 ## other
 
 Before birdEye transform, Calibrationof camera is needed! here is a [link](http://tanzby.cn/2017/08/01/%E5%9F%BA%E4%BA%8EopenCV%E7%9A%84%E7%9B%B8%E6%9C%BA%E6%A0%A1%E6%AD%A3%E7%A8%8B%E5%BA%8F/) for calibration. 
