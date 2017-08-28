@@ -5,14 +5,12 @@ using namespace std;
 
 // calculate correspondence point for every input
 // 0: left up  1: right up  2:rigth down  3: left down
-
-
 class BirdView
 {
 public:
 	BirdView(const char* configFile = NULL)
 	{
-		isOK1=isOK2 = false;
+		SourcePoint_OK=ParamSet_OK = false;
 		maskHeigth = clickCount = camID = 0;
 		targetPoint.resize(4);
 		sourcePoint.resize(4);
@@ -30,34 +28,34 @@ public:
 			readConfig(configFile);
 		}
 	}
-	void setInternalShift(Size ShiftAdjust_)
+	void setInternalShift(int W, int H)
 	{
-		ShiftAdjust = ShiftAdjust_;
-		isOK2 = false;
+		ShiftAdjust = Size(W,H);
+		ParamSet_OK = false;
 		setParam();
 	}
 	void setShift(int W, int H)
 	{
 		Shift = Size(W,H);
-		isOK2 = false;
+		ParamSet_OK = false;
 		setParam();
 	}
 	void setCarSize(int W,int H)
 	{
-		mSize= Size (Shift.width * 2 + W + chessBordWidth.width * 2, Shift.height * 2 + H + chessBordWidth.height * 2);	
-		isOK2 = false;
+		carSize = Size(W, H);
+		ParamSet_OK = false;
 		setParam();
 	}
 	void setChessSize(int width)
 	{
 		chessBordWidth.width = chessBordWidth.height = width;
-		isOK2 = false;
+		ParamSet_OK = false;
 		setParam();
 	}
 	void setMaskHeigth(int maskHeigth_)
 	{
 		maskHeigth = maskHeigth_;
-		isOK2 = false;
+		ParamSet_OK = false;
 		setParam();
 	}
 	void sourcePointClick(Mat *v)
@@ -81,7 +79,7 @@ public:
 		setMouseCallback(windowsName, NULL, NULL);
 		destroyWindow(windowsName);
 		saveConfig("config.yml");/*save source's points*/
-		isOK1 = true;
+		SourcePoint_OK = true;
 	}
 	void sourcePointClick(cv::VideoCapture *v)
 	{
@@ -109,7 +107,7 @@ public:
 		setMouseCallback(windowsName, NULL, NULL);
 		destroyWindow(windowsName);
 		saveConfig("config.yml");/*save source's points*/
-		isOK1 = true;
+		SourcePoint_OK = true;
 	}
 	void saveConfig(const char* configFile = "config.yml")
 	{
@@ -134,7 +132,7 @@ public:
 				}
 			}
 			fs.release();
-			cout << "\n param save complete! \n\n";
+			std::cout << "\n param save complete! \n\n";
 		}
 	}
 	void readConfig(const char* configFile = "config.yml")
@@ -151,8 +149,8 @@ public:
 					fs[buf] >> sourcePoint[i][k];
 				}
 			}
-			isOK1 = true;  // source point reading completed
-			isOK2 = false; // setting parma 
+			SourcePoint_OK = true;  // source point reading completed
+			ParamSet_OK = false; // setting parma 
 			setParam();
 			std::cout << "[WARNING] Config file read sucessfully!\n";
 		}
@@ -160,11 +158,11 @@ public:
 	}
 	Mat  transformView(Mat* v)
 	{
-		if (!isOK1)
+		if (!SourcePoint_OK)
 		{
 			throw "[ERROR] Source Points have not been pointed! please Add function sourcePointClick to get Source Points!\n";
 		}
-		if (!isOK2)
+		if (!ParamSet_OK)
 		{
 			setParam();
 		}
@@ -223,11 +221,10 @@ public:
 private:
 	Rect r[4];
 	int clickCount, camID, maskHeigth;
-	Mat Birdtransform[4];
-	Mat maskF, maskB;
+	Mat Birdtransform[4],maskF, maskB;
 	vector<vector<Point2f>> targetPoint, sourcePoint;
-	Size ShiftAdjust, Shift, chessBordWidth, mSize; //内部偏移、外部偏移
-	bool isOK1,isOK2;
+	Size ShiftAdjust, Shift, chessBordWidth, mSize, carSize; //内部偏移、外部偏移
+	bool SourcePoint_OK,ParamSet_OK;
 	void setParam(bool tranformCheck = false)
 	{
 		 //// WARMING will show when Transform is running but not all parameters have been set
@@ -246,18 +243,21 @@ private:
 			if (tranformCheck)std::cout << "[WARMING] ShiftAdjust has not been set! Default value will be used" << std::endl;
 			ShiftAdjust.width = ShiftAdjust.height = 30;
 		}
-		if (mSize.area() == 0)
+		if (carSize.area() == 0)
 		{
-			if (tranformCheck)std::cout << "[WARMING] Shift has not been set! Default value will be used" << std::endl;
-			mSize = Size(Shift.width * 2 + 240 + chessBordWidth.width * 2, Shift.height * 2 + 380 + chessBordWidth.height * 2);
+			if (tranformCheck)std::cout << "[WARMING] carSize has not been set! Default value will be used" << std::endl;
+			carSize = Size(240, 380);
 		}
 		if (maskHeigth >=100 || maskHeigth <=0)
 		{
 			if (tranformCheck)std::cout << "[WARMING] maskHeigth has not been set! Default value will be used" << std::endl;
 			maskHeigth = 200;
 		}
-		if (!isOK2)
+		if (!ParamSet_OK)
 		{
+			/*The size of the entire output image*/
+			mSize = Size(Shift.width * 2 + carSize.width + chessBordWidth.width * 2,
+						 Shift.height * 2 + carSize.height + chessBordWidth.height * 2);
 			/*make targetPoint, need chessBordWidth,mSize,Shift*/
 			/*left*/
 			targetPoint[0][0] = (Point2f(Shift.width + chessBordWidth.width, Shift.height));
@@ -326,7 +326,7 @@ private:
 				Birdtransform[i] = getPerspectiveTransform(sourcePoint[i], targetPoint[i]);
 			}
 
-			isOK2 = true;
+			ParamSet_OK = true;
 		}
 	}
 };
@@ -350,7 +350,7 @@ int main()
 	b.setCarSize(240, 380); 
 	b.setChessSize(60);
 	b.setMaskHeigth(200);
-	b.setInternalShift(Size(30,30));
+	b.setInternalShift(27,27);
 
 	//b.sourcePointClick(v);
 
