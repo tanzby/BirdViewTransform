@@ -1,5 +1,5 @@
 # BirdViewTransform
-Put FOUR image (or video stream )from 4 different directions together, and form them into a bird view. 
+Put FOUR image (or video stream )from 4 different directions together, and form them into a bird view **by pointing out 4 corner in 4 direc pic**. 
 
 ## About
 
